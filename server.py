@@ -24,4 +24,5 @@ try:
             ssl_socket.shutdown(socket.SHUT_RDWR)
             ssl_socket.close()
 except KeyboardInterrupt:
+    s.close()
     sys.exit("Server interrupted by keyboard.")
