@@ -1,3 +1,4 @@
+import socket, ssl, pprint
 from mycrypto import *
 
 def put(tokens):
@@ -21,7 +22,21 @@ def get(tokens):
 
 def exit(_):
     return False
+# ==============================================================================
+# Connect ssl socket to server
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ssl_socket = ssl.wrap_socket(s,
+                             certfile="client.crt",
+                             keyfile="client.key",
+                             ca_certs="server.crt",
+                             cert_reqs=ssl.CERT_REQUIRED)
+ssl_socket.connect(('localhost', 10023))
 
+ssl_socket.write("I have established myself in the server!")
+print pprint.pformat(ssl_socket.getpeercert())
+ssl_socket.close()
+
+# ==============================================================================
 options = {
     "put": put,
     "get": get,
