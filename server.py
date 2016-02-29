@@ -14,16 +14,17 @@ def recvb64(sock, length):
     return buffer
 
 def put_file(filename, size, ssl_socket):
-    f_contents = recvb64(ssl_socket, f_size)
-    with open('recv/'+f_string, 'w') as ofile:
+    contents = recvb64(ssl_socket, size)
+    with open('recv/'+filename, 'w') as ofile:
         # Write plaintext to file
-        ofile.write(f_contents)
-    with open('recv/'+f_string+'.sha256', 'w') as hashfile:
+        ofile.write(contents)
+    with open('recv/'+filename+'.sha256', 'w') as hashfile:
         # Write hash to file
-        hashed = SHA256_hash(f_contents)
+        hashed = SHA256_hash(contents)
         hashfile.write(hashed)
 
 def get_file(filename, size, ssl_socket):
+    print "getting file..."
 
 def handle_client(ssl_socket):
     command = ssl_socket.recv(4)

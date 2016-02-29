@@ -19,11 +19,11 @@ class Client:
 
     def put(self, tokens):
         # Put file onto server
-        # Verify 3 parameters
-        if (len(tokens)) != 3:
-            print "Usage: put filepath E|N"
+        # Verify parameters
+        if len(tokens) != 3 and len(tokens) != 4:
+            print "Usage: put filepath N|[E [password]]"
         else:
-            # try:
+            try:
                 # Open file to send
                 putfile = open(tokens[1], 'r')
                 plaintext = putfile.read()
@@ -36,8 +36,8 @@ class Client:
                 self.ssl_socket.write("Filename: " + tokens[1])
                 self.ssl_socket.write("Size: " + str(length))
                 self.ssl_socket.write(encoded_text)
-            # except:
-            #     print "/!\\ File", tokens[1], "cannot be sent."
+            except:
+                print "/!\\ File", tokens[1], "cannot be sent."
         return True
 
     def get(self, tokens):
