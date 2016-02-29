@@ -11,7 +11,8 @@ def put(tokens):
             putfile = open(tokens[1], 'r')
             plaintext = putfile.read()
             putfile.close()
-            print plaintext
+            # print plaintext
+            
         except:
             print "/!\\ File", tokens[1], "cannot be sent."
     return True
@@ -22,6 +23,7 @@ def get(tokens):
 
 def exit(_):
     return False
+
 # ==============================================================================
 # Connect ssl socket to server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
