@@ -21,23 +21,30 @@ def put_file(filename, hashed, size, ssl_socket):
     with open('recv/'+filename+'.sha256', 'w') as hashfile:
         # Write hash to file
         hashfile.write(hashed)
+    print filename, "written to file."
 
-def get_file(filename, size, ssl_socket):
+def get_file(filename, ssl_socket):
     file_exists = os.path.isfile('recv/'+filename) and os.path.isfile('recv/'+filename+'.sha256')
     if file_exists:
         content = ""
         try:
+            # Read and send Hash file
             hfile = open('recv/'+filename+'.sha256', 'r')
             hashed_content = hfile.read()
             ssl_socket.write(hashed_content)
             hfile.close()
+            # Read and send content file
             ifile = open('recv/'+filename, 'r')
             content = base64.b64encode(ifile.read())
-            ssl_socket.write("Size: " + len(content))
+            ssl_socket.write("Size: " + str(len(content)))
             ssl_socket.write(content)
             ifile.close()
+            print filename, "sent to client"
         except:
             ssl_socket.write("Failure: File could not be retrieved.")
+    else:
+        print "File does not exist."
+        ssl_socket.write("Failure: File could not be retrieved.")
 
 def handle_client(ssl_socket):
     command = ssl_socket.recv(4)
@@ -52,7 +59,7 @@ def handle_client(ssl_socket):
         put_file(filename, hashed, f_size, ssl_socket)
     elif command == "get":
         # Send file to client
-        get_file(f_string, ssl_socket)
+        get_file(filename, ssl_socket)
     else:
         # Somehow received an invalid command
         sys.exit("/!\\ Received command that is neither put, get, or stop.")
