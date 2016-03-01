@@ -14,13 +14,13 @@ def recvb64(sock, length):
     return buffer
 
 class Client:
-    def __init__(self, server_host, server_port):
+    def __init__(self, server_host, server_port, cert="client.crt", key="client.key", scert="server.crt"):
         # Connect to server, create tls socket
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ssl_socket = ssl.wrap_socket(s,
-                                          certfile="client.crt",
-                                          keyfile="client.key",
-                                          ca_certs="server.crt",
+                                          certfile=cert,
+                                          keyfile=key,
+                                          ca_certs=scert,
                                           cert_reqs=ssl.CERT_REQUIRED)
         self.ssl_socket.connect((server_host, server_port))
         # self.ssl_socket.write("I have established myself in the server!")
@@ -124,8 +124,8 @@ class Client:
 
 # ==============================================================================
 # Parse command line args
-if len(sys.argv) != 3:
-    sys.exit("Usage: python client.py server_hostname port")
+if len(sys.argv) != 3 and len(sys.argv) != 6:
+    sys.exit("Usage: python client.py server_hostname port [client_cert client_key server_cert]")
 try:
     port = int(sys.argv[2])
     if port < 0 or port > 65536:

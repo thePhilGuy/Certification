@@ -66,14 +66,22 @@ def handle_client(ssl_socket):
     return True
 
 # Parse command line args
-if len(sys.argv) != 2:
-    sys.exit("Usage: python server.py port")
+if len(sys.argv) != 2 and len(sys.argv) != 5:
+    sys.exit("Usage: python server.py port [server_cert server_key client_cert]")
 try:
     port = int(sys.argv[1])
     if port < 0 or port > 65536:
         raise ValueError()
 except:
     sys.exit("Port must be a positive integer <= 65536")
+
+certs_exist = False
+if len(sys.argv) == 5:
+    scert = sys.argv[2]
+    skey = sys.argv[3]
+    ccert = sys.argv[4]
+    certs_exist = os.path.isfile(scert) and os.path.isfile(skey) and os.path.isfile(ccert)
+
 
 # Create underlying listening socket
 s = socket.socket()
@@ -83,12 +91,20 @@ s.listen(1)
 try:
     # Accept client connection with SSL certificate
     connection, fromaddr = s.accept()
-    ssl_socket = ssl.wrap_socket(connection,
-                                 server_side=True,
-                                 certfile="server.crt",
-                                 keyfile="server.key",
-                                 ca_certs="client.crt",
-                                 cert_reqs=ssl.CERT_REQUIRED)
+    if certs_exist:
+        ssl_socket = ssl.wrap_socket(connection,
+                                     server_side=True,
+                                     certfile=scert,
+                                     keyfile=skey,
+                                     ca_certs=ccert,
+                                     cert_reqs=ssl.CERT_REQUIRED)
+    else:
+        ssl_socket = ssl.wrap_socket(connection,
+                                     server_side=True,
+                                     certfile="server.crt",
+                                     keyfile="server.key",
+                                     ca_certs="client.crt",
+                                     cert_reqs=ssl.CERT_REQUIRED)
     running = True
     while running:
         running = handle_client(ssl_socket)
