@@ -1,6 +1,6 @@
 # Network Security - Programming Assignment 2
-
 I have implemented programming assignment 2 using python 2.
+By the way my name is Philippe-Guillaume Losembe and uni is pvl2109
 
 ## Setup
 In order to make sure all the certificates exist
