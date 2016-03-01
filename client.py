@@ -110,7 +110,7 @@ class Client:
 
             # Write response to file
             try:
-                ofile = open('crecv/'+filename, 'w')
+                ofile = open(filename, 'w')
                 ofile.write(plaintext)
                 ofile.close()
                 print filename, "written to file."
@@ -150,5 +150,5 @@ while running:
     tokens = raw_input("Please enter your command: ").split()
     try:
         running = options[tokens[0]](client, tokens)
-    except KeyError:
+    except KeyError, IndexError:
         print "/!\\ Invalid command /!\\. Please use put, get, or exit."

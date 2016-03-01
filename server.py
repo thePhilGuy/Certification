@@ -15,26 +15,26 @@ def recvb64(sock, length):
 
 def put_file(filename, hashed, size, ssl_socket):
     contents = recvb64(ssl_socket, size)
-    with open('recv/'+filename, 'w') as ofile:
+    with open(filename, 'w') as ofile:
         # Write plaintext to file
         ofile.write(contents)
-    with open('recv/'+filename+'.sha256', 'w') as hashfile:
+    with open(filename+'.sha256', 'w') as hashfile:
         # Write hash to file
         hashfile.write(hashed)
     print filename, "written to file."
 
 def get_file(filename, ssl_socket):
-    file_exists = os.path.isfile('recv/'+filename) and os.path.isfile('recv/'+filename+'.sha256')
+    file_exists = os.path.isfile(filename) and os.path.isfile(filename+'.sha256')
     if file_exists:
         content = ""
         try:
             # Read and send Hash file
-            hfile = open('recv/'+filename+'.sha256', 'r')
+            hfile = open(filename+'.sha256', 'r')
             hashed_content = hfile.read()
             ssl_socket.write(hashed_content)
             hfile.close()
             # Read and send content file
-            ifile = open('recv/'+filename, 'r')
+            ifile = open(filename, 'r')
             content = base64.b64encode(ifile.read())
             ssl_socket.write("Size: " + str(len(content)))
             ssl_socket.write(content)
