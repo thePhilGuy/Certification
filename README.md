@@ -2,6 +2,13 @@
 
 I have implemented programming assignment 2 using python 2.
 
+## Setup
+I place all received files in a subfolder named recv, in order to make sure it exists as well as the certificates
+please run
+```sh
+sh setup.sh
+```
+
 ## Certificate generation
 The self-signed certificates for both the server and client are generated using the
 script in gencerts.sh:

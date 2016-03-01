@@ -19,21 +19,37 @@ class Client:
 
     def put(self, tokens):
         # Put file onto server
+        encrypt = False
         # Verify parameters
         if len(tokens) != 3 and len(tokens) != 4:
             print "Usage: put filepath N|[E [password]]"
+        elif len(tokens) == 3 and tokens[2] != 'N':
+            print "Client expects flag N for normal mode. ( 2 params to put)"
+        elif len(tokens) == 4 and (tokens[2] != 'E' or len(tokens[3]) != 8):
+            print "Client expects flag E for encrypted mode as well as an 8 character password."
         else:
+            encrypt = tokens[2] == 'E'
             try:
                 # Open file to send
                 putfile = open(tokens[1], 'r')
                 plaintext = putfile.read()
                 putfile.close()
 
+                encoded_text = ''
+                hashed_text = SHA256_hash(plaintext)
+                if encrypt:
+                    password = tokens[3]
+                    key = SHA256_hash(password)[:16]
+                    ciphertext = AES_encrypt(plaintext, key)
+                    encoded_text = base64.b64encode(ciphertext)
+                else:
+                    encoded_text = base64.b64encode(plaintext)
+
                 # Send file to Server
-                encoded_text = base64.b64encode(plaintext)
                 length = len(encoded_text)
                 self.ssl_socket.write("put")
                 self.ssl_socket.write("Filename: " + tokens[1])
+                self.ssl_socket.write("Hash: " + hashed_text)
                 self.ssl_socket.write("Size: " + str(length))
                 self.ssl_socket.write(encoded_text)
             except:

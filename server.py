@@ -1,4 +1,4 @@
-import socket, ssl, sys, base64
+import socket, ssl, sys, base64, os
 from mycrypto import *
 
 def recvb64(sock, length):
@@ -13,29 +13,43 @@ def recvb64(sock, length):
         buffer += base64.b64decode(sock.recv(length))
     return buffer
 
-def put_file(filename, size, ssl_socket):
+def put_file(filename, hashed, size, ssl_socket):
     contents = recvb64(ssl_socket, size)
     with open('recv/'+filename, 'w') as ofile:
         # Write plaintext to file
         ofile.write(contents)
     with open('recv/'+filename+'.sha256', 'w') as hashfile:
         # Write hash to file
-        hashed = SHA256_hash(contents)
         hashfile.write(hashed)
 
 def get_file(filename, size, ssl_socket):
-    print "getting file..."
+    file_exists = os.path.isfile('recv/'+filename) and os.path.isfile('recv/'+filename+'.sha256')
+    if file_exists:
+        content = ""
+        try:
+            hfile = open('recv/'+filename+'.sha256', 'r')
+            hashed_content = hfile.read()
+            ssl_socket.write(hashed_content)
+            hfile.close()
+            ifile = open('recv/'+filename, 'r')
+            content = base64.b64encode(ifile.read())
+            ssl_socket.write("Size: " + len(content))
+            ssl_socket.write(content)
+            ifile.close()
+        except:
+            ssl_socket.write("Failure: File could not be retrieved.")
 
 def handle_client(ssl_socket):
     command = ssl_socket.recv(4)
     if command == "stop":
         # Stop handling this client
         return False
-    f_string = ssl_socket.recv(100)[10:]
+    filename = ssl_socket.recv(100)[10:]
     if command == "put":
         # Download file from client
+        hashed = ssl_socket.recv(100)[6:]
         f_size = int(ssl_socket.recv(100)[6:])
-        put_file(f_string, f_size, ssl_socket)
+        put_file(filename, hashed, f_size, ssl_socket)
     elif command == "get":
         # Send file to client
         get_file(f_string, ssl_socket)
