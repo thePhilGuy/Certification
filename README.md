@@ -1,6 +1,5 @@
-# Network Security - Programming Assignment 2
-I have implemented programming assignment 2 using python 2.
-By the way my name is Philippe-Guillaume Losembe and uni is pvl2109
+# SSL Certification
+I have implemented a simple file transfer client/server connection over SSL, with optional encryption using SSL on the client and SHA256 hashing to verify file integrity.
 
 ## Setup
 In order to make sure all the certificates exist
@@ -25,12 +24,12 @@ The command in said script use RSA and SHA256 and have been established from:
 The server is run assuming that certificates have already been generated with name server, however files for the server ( and key ) and client certificates can also be provided
 Example:
 ```sh
-python server.py 4180 [server_cert server_key client_cert]
+python server.py port# [server_cert server_key client_cert]
 ```
 
 ### Client
 The client is run assuming that certificates have already been generated with name client, however files for the server (and key) and client certificates can also be provided
 Example:
 ```sh
-python client.py brussels.clic.cs.columbia.edu 4180 [client_cert client_key server_cert]
+python client.py server_addr port# [client_cert client_key server_cert]
 ```

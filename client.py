@@ -147,7 +147,7 @@ options = {
 
 running = True
 while running:
-    tokens = raw_input("Please enter your command: ").split()
+    tokens = raw_input("> ").split()
     try:
         running = options[tokens[0]](client, tokens)
     except KeyError, IndexError:
